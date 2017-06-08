@@ -15,11 +15,11 @@
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@glimmer/di/-/di-0.2.0.tgz#73bfd4a6ee4148a80bf092e8a5d29bcac9d4ce7e"
 
-"@glimmer/interfaces@^0.23.0-alpha.17":
-  version "0.23.0-alpha.18"
-  resolved "https://registry.yarnpkg.com/@glimmer/interfaces/-/interfaces-0.23.0-alpha.18.tgz#73d60e73627a752ac72f5de272065eb8892b942d"
+"@glimmer/interfaces@^0.24.0-beta.4":
+  version "0.24.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@glimmer/interfaces/-/interfaces-0.24.0-beta.4.tgz#c4ee238d22f9d6805328e986326fcaa042843878"
   dependencies:
-    "@glimmer/wire-format" "^0.23.0-alpha.18"
+    "@glimmer/wire-format" "^0.24.0-beta.4"
 
 "@glimmer/resolution-map-builder@^0.4.0":
   version "0.4.0"
@@ -35,12 +35,12 @@
   dependencies:
     "@glimmer/di" "^0.2.0"
 
-"@glimmer/syntax@0.23.0-alpha.17":
-  version "0.23.0-alpha.17"
-  resolved "https://registry.yarnpkg.com/@glimmer/syntax/-/syntax-0.23.0-alpha.17.tgz#2e7feef382e3470743d58e60ea319b6a4ac5db25"
+"@glimmer/syntax@0.24.0-beta.4":
+  version "0.24.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@glimmer/syntax/-/syntax-0.24.0-beta.4.tgz#4e61c912f0f45c43175a178390630da637138e35"
   dependencies:
-    "@glimmer/interfaces" "^0.23.0-alpha.17"
-    "@glimmer/util" "^0.23.0-alpha.17"
+    "@glimmer/interfaces" "^0.24.0-beta.4"
+    "@glimmer/util" "^0.24.0-beta.4"
     handlebars "^4.0.6"
     simple-html-tokenizer "^0.3.0"
 
@@ -55,9 +55,9 @@
   version "0.22.1"
   resolved "https://registry.yarnpkg.com/@glimmer/util/-/util-0.22.1.tgz#7be751f77325ac857327f9c786ee2d02fba4d4e1"
 
-"@glimmer/util@^0.23.0-alpha.17", "@glimmer/util@^0.23.0-alpha.18":
-  version "0.23.0-alpha.18"
-  resolved "https://registry.yarnpkg.com/@glimmer/util/-/util-0.23.0-alpha.18.tgz#0a133c6894f3de2c9ace1c22c5c6f2ab33f4976f"
+"@glimmer/util@^0.24.0-beta.4":
+  version "0.24.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@glimmer/util/-/util-0.24.0-beta.4.tgz#d49063e432e2fd2af7bdc1422d3b0d849e6ce328"
 
 "@glimmer/wire-format@^0.22.1":
   version "0.22.1"
@@ -65,11 +65,11 @@
   dependencies:
     "@glimmer/util" "^0.22.1"
 
-"@glimmer/wire-format@^0.23.0-alpha.18":
-  version "0.23.0-alpha.18"
-  resolved "https://registry.yarnpkg.com/@glimmer/wire-format/-/wire-format-0.23.0-alpha.18.tgz#6fa33934125348d09f929b7b833d388407dbbe37"
+"@glimmer/wire-format@^0.24.0-beta.4":
+  version "0.24.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@glimmer/wire-format/-/wire-format-0.24.0-beta.4.tgz#793acc653e2b718b5052f59943604c0317995b75"
   dependencies:
-    "@glimmer/util" "^0.23.0-alpha.18"
+    "@glimmer/util" "^0.24.0-beta.4"
 
 "@types/chai@^3.5.2":
   version "3.5.2"

@@ -18,6 +18,16 @@ export function discoverTemplateDependencies(templateName: string, project: Proj
   let hasComponentHelper = false;
 
   traverse(ast, {
+    MustacheCommentStatement(node) {
+      if (isImportComment(node)) {
+        extractComponentsFromComment(node.value)
+          .map(c => resolver.identify(`template:${c}`, template.specifier))
+          .filter(Boolean)
+          .map(specifier => pathFromSpecifier(specifier))
+          .forEach(path => usedComponents.add(path));
+      }
+    },
+
     MustacheStatement(node) {
       if (isComponentHelper(node)) {
         hasComponentHelper = true;
@@ -48,6 +58,14 @@ function isComponentHelper({ path }: AST.MustacheStatement) {
   return path.type === 'PathExpression'
     && path.parts.length === 1
     && path.parts[0] === 'component';
+}
+
+function extractComponentsFromComment(comment: string) {
+  return comment.trim().substr(7).split(' ');
+}
+
+function isImportComment({ value }: AST.MustacheCommentStatement) {
+  return value.trim().substr(0, 7) === 'import ';
 }
 
 export function discoverRecursiveTemplateDependencies(templateName: string, project: Project): TemplateDependencies {

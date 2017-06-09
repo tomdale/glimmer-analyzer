@@ -26,13 +26,13 @@ export default class Project {
   resolver: Resolver;
   registry: BasicModuleRegistry;
 
-  constructor(projectDir: string) {
+  constructor(projectDir: string, moduleConfig?: any) {
     this.projectDir = projectDir;
     let pkg = this.loadPackageJSON(projectDir);
     let { name } = pkg;
 
     let config = {
-      ...DEFAULT_MODULE_CONFIG,
+      ...(moduleConfig || DEFAULT_MODULE_CONFIG),
       app: {
         name,
         rootName: name

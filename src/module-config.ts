@@ -1,4 +1,6 @@
-export default {
+import { ResolverConfiguration } from "@glimmer/resolver";
+
+let config: ResolverConfiguration = {
   "types": {
     "application": { "definitiveCollection": "main" },
     "component": { "definitiveCollection": "components" },
@@ -21,4 +23,6 @@ export default {
       "unresolvable": true
     }
   }
-}
+};
+
+export default config;

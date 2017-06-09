@@ -2,7 +2,7 @@ import fs = require('fs');
 import path = require('path');
 
 import { buildResolutionMap } from '@glimmer/resolution-map-builder';
-import Resolver, { BasicModuleRegistry } from '@glimmer/resolver';
+import Resolver, { BasicModuleRegistry, ResolverConfiguration } from '@glimmer/resolver';
 
 import DEFAULT_MODULE_CONFIG from './module-config';
 
@@ -20,19 +20,24 @@ export class Template {
   }
 }
 
+export interface ProjectOptions {
+  resolverConfiguration?: ResolverConfiguration
+}
+
 export default class Project {
   projectDir: string;
   map: ResolutionMap;
   resolver: Resolver;
   registry: BasicModuleRegistry;
+  options: ProjectOptions;
 
-  constructor(projectDir: string, moduleConfig?: any) {
+  constructor(projectDir: string, options?: ProjectOptions) {
     this.projectDir = projectDir;
     let pkg = this.loadPackageJSON(projectDir);
     let { name } = pkg;
 
-    let config = {
-      ...(moduleConfig || DEFAULT_MODULE_CONFIG),
+    let config: ResolverConfiguration = {
+      ...((options && options.resolverConfiguration) || DEFAULT_MODULE_CONFIG),
       app: {
         name,
         rootName: name

@@ -17,6 +17,10 @@ describe('Template dependency analysis', function() {
       components: [
         '/basic-app/components/my-app/page-banner',
         '/basic-app/components/text-editor'
+      ],
+      helpers: [
+        '/basic-app/components/if',
+        '/basic-app/components/moment',
       ]
     });
   });
@@ -30,7 +34,8 @@ describe('Template dependency analysis', function() {
       hasComponentHelper: true,
       components: [
         '/basic-app/components/my-app'
-      ]
+      ],
+      helpers: []
     });
   });
 });

@@ -3,7 +3,7 @@ import Project, { ResolutionMap } from './project';
 import {
   discoverTemplateDependencies,
   discoverRecursiveTemplateDependencies,
-  TemplateDependencies
+  TemplateDependencies as InternalTemplateDependencies
 } from './handlebars-analyzer';
 import { pathFromSpecifier } from './utils';
 
@@ -15,22 +15,41 @@ class Analyzer {
   }
 
   dependenciesForTemplate(componentName: string) {
-    return discoverTemplateDependencies(componentName, this.project);
+    let dependencies = discoverTemplateDependencies(componentName, this.project);
+    return transformSetsToArrays(dependencies);
   }
 
   recursiveDependenciesForTemplate(componentName: string) {
-    return discoverRecursiveTemplateDependencies(componentName, this.project);
+    let dependencies = discoverRecursiveTemplateDependencies(componentName, this.project);
+    return transformSetsToArrays(dependencies);
   }
 
   resolutionMapForEntryPoint(templateName: string, map?: ResolutionMap) {
     let dependencies = discoverRecursiveTemplateDependencies(templateName, this.project);
     let components = new Set([dependencies.path, ...dependencies.components]);
-    
+    let helpers = dependencies.helpers;
+
     return filterResolutionMap(map || this.project.map, specifier => {
       let [type, path] = specifier.split(':');
-      return (type === 'component' || type === 'template') && components.has(path);
+
+      switch (type) {
+        case 'component':
+        case 'template':
+          return components.has(path);
+        case 'helper':
+          return helpers.has(path);
+      }
+
+      return false;
     });
   }
+}
+
+export interface TemplateDependencies {
+  path: string;
+  hasComponentHelper: boolean;
+  components: string[];
+  helpers: string[];
 }
 
 function filterResolutionMap(map: ResolutionMap, filter: (specifier: string) => boolean): ResolutionMap {
@@ -43,6 +62,17 @@ function filterResolutionMap(map: ResolutionMap, filter: (specifier: string) => 
   }
 
   return filteredMap;
+}
+
+function transformSetsToArrays(dependencies: InternalTemplateDependencies): TemplateDependencies {
+  let { path, hasComponentHelper, components, helpers } = dependencies;
+
+  return {
+    path,
+    hasComponentHelper,
+    components: Array.from(components),
+    helpers: Array.from(helpers)
+  }
 }
 
 export default Analyzer;

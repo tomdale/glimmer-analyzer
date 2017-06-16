@@ -1,4 +1,5 @@
 <div class="my-app">
   <page-banner />
-  <text-editor disabled />
+  <text-editor disabled={{if isReadOnly}} />
+  <p>{{someText}} {{moment publishDate}}</p>
 </div>

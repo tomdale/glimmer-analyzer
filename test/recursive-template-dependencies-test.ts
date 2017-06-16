@@ -19,6 +19,10 @@ describe('Recursive template dependency analysis', function() {
         '/basic-app/components/text-editor',
         '/basic-app/components/my-app/page-banner/user-avatar',
         '/basic-app/components/ferret-launcher'
+      ],
+      helpers: [
+        '/basic-app/components/if',
+        '/basic-app/components/moment'
       ]
     });
   });
@@ -36,6 +40,8 @@ describe('Recursive template dependency analysis', function() {
       'template:/basic-app/components/my-app/page-banner/user-avatar': 'ui/components/my-app/page-banner/user-avatar/template.hbs',
       'template:/basic-app/components/text-editor': 'ui/components/text-editor.hbs',
       'component:/basic-app/components/text-editor': 'ui/components/text-editor.ts',
+      'helper:/basic-app/components/if': 'ui/components/if/helper.ts',
+      'helper:/basic-app/components/moment': 'ui/components/moment/helper.ts',
     });
   });
 });

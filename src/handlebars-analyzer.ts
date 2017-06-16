@@ -6,7 +6,8 @@ import { pathFromSpecifier } from "./utils";
 export interface TemplateDependencies {
   path: string;
   hasComponentHelper: boolean;
-  components: string[];
+  components: Set<string>;
+  helpers: Set<string>;
 }
 
 export function discoverTemplateDependencies(templateName: string, project: Project): TemplateDependencies {
@@ -14,7 +15,8 @@ export function discoverTemplateDependencies(templateName: string, project: Proj
   let template = project.templateFor(templateName);
 
   let ast = preprocess(template.string);
-  let usedComponents = new Set<string>();
+  let components = new Set<string>();
+  let helpers = new Set<string>();
   let hasComponentHelper = false;
 
   traverse(ast, {
@@ -24,13 +26,19 @@ export function discoverTemplateDependencies(templateName: string, project: Proj
           .map(c => resolver.identify(`template:${c}`, template.specifier))
           .filter(Boolean)
           .map(specifier => pathFromSpecifier(specifier))
-          .forEach(path => usedComponents.add(path));
+          .forEach(path => components.add(path));
       }
     },
 
     MustacheStatement(node) {
       if (isComponentHelper(node)) {
         hasComponentHelper = true;
+      } else {
+        let specifier = resolver.identify(specifierForHelper(node), template.specifier);
+
+        if (specifier) {
+          helpers.add(pathFromSpecifier(specifier));
+        }
       }
     },
 
@@ -39,19 +47,23 @@ export function discoverTemplateDependencies(templateName: string, project: Proj
       let specifier = resolver.identify(`template:${tag}`, template.specifier);
 
       if (specifier) {
-        usedComponents.add(pathFromSpecifier(specifier));
+        components.add(pathFromSpecifier(specifier));
       }
     }
   });
 
   let path = pathFromSpecifier(template.specifier);
-  let components = Array.from(usedComponents);
 
   return {
     path,
     hasComponentHelper,
-    components
+    components,
+    helpers
   };
+}
+
+function specifierForHelper({ path }: AST.MustacheStatement) {
+  return `helper:${path.original}`;
 }
 
 function isComponentHelper({ path }: AST.MustacheStatement) {
@@ -73,7 +85,8 @@ export function discoverRecursiveTemplateDependencies(templateName: string, proj
   let entryPoint = project.templateFor(templateName);
   let entryPointPath = pathFromSpecifier(entryPoint.specifier);
 
-  let seen = new Set([entryPointPath]);
+  let components = new Set([entryPointPath]);
+  let helpers = new Set<string>();
   let queue = [entryPointPath];
   let hasComponentHelper = false;
 
@@ -83,19 +96,23 @@ export function discoverRecursiveTemplateDependencies(templateName: string, proj
     hasComponentHelper = hasComponentHelper || dependencies.hasComponentHelper;
 
     for (let component of dependencies.components) {
-      if (!seen.has(component)) {
-        seen.add(component);
+      if (!components.has(component)) {
+        components.add(component);
         queue.push(component);
       }
     }
+
+    for (let helper of dependencies.helpers) {
+      helpers.add(helper);
+    }
   }
 
-  seen.delete(entryPointPath);
+  components.delete(entryPointPath);
 
-  let components = Array.from(seen);
   return {
     path: entryPointPath,
     hasComponentHelper,
-    components
+    components,
+    helpers
   };
 }

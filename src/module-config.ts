@@ -1,24 +1,27 @@
 export default {
-  "types": {
-    "application": { "definitiveCollection": "main" },
-    "component": { "definitiveCollection": "components" },
-    "renderer": { "definitiveCollection": "main" },
-    "service": { "definitiveCollection": "services" },
-    "template": { "definitiveCollection": "components" },
-    "util": { "definitiveCollection": "utils" }
+  types: {
+    application: { definitiveCollection: 'main' },
+    component: { definitiveCollection: 'components' },
+    helper: { definitiveCollection: 'components' },
+    renderer: { definitiveCollection: 'main' },
+    template: { definitiveCollection: 'components' }
   },
-  "collections": {
-    "main": {
-      "types": ["application", "renderer"]
+  collections: {
+    main: {
+      types: ['application', 'renderer']
     },
-    "components": {
-      "group": "ui",
-      "types": ["component", "template"],
-      "defaultType": "component",
-      "privateCollections": ["utils"]
+    components: {
+      group: 'ui',
+      types: ['component', 'template', 'helper'],
+      defaultType: 'component',
+      privateCollections: ['utils']
     },
-    "utils": {
-      "unresolvable": true
+    styles: {
+      group: 'ui',
+      unresolvable: true
+    },
+    utils: {
+      unresolvable: true
     }
   }
-}
+};

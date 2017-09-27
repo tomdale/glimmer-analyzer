@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/tomdale/glimmer-analyzer#readme",
   "devDependencies": {
-    "@glimmer/compiler": "0.24.0-beta.6",
+    "@glimmer/compiler": "^0.29.1",
     "@types/chai": "^3.5.2",
     "@types/mocha": "^2.2.41",
     "@types/node": "^7.0.18",
@@ -41,7 +41,7 @@
   "dependencies": {
     "@glimmer/resolution-map-builder": "^0.4.0",
     "@glimmer/resolver": "^0.3.0",
-    "@glimmer/syntax": "0.24.0-beta.6",
+    "@glimmer/syntax": "^0.29.1",
     "simple-html-tokenizer": "^0.4.1"
   }
 }

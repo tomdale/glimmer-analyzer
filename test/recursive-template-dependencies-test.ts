@@ -22,6 +22,7 @@ describe('Recursive template dependency analysis', function() {
       ],
       helpers: [
         '/basic-app/components/if',
+        '/basic-app/components/eq',
         '/basic-app/components/moment'
       ]
     });
@@ -41,6 +42,7 @@ describe('Recursive template dependency analysis', function() {
       'template:/basic-app/components/text-editor': 'ui/components/text-editor.hbs',
       'component:/basic-app/components/text-editor': 'ui/components/text-editor.ts',
       'helper:/basic-app/components/if': 'ui/components/if/helper.ts',
+      'helper:/basic-app/components/eq': 'ui/components/eq/helper.ts',
       'helper:/basic-app/components/moment': 'ui/components/moment/helper.ts',
     });
   });

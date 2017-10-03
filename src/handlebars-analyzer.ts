@@ -42,6 +42,18 @@ export function discoverTemplateDependencies(templateName: string, project: Proj
       }
     },
 
+    SubExpression(node) {
+      if (isComponentHelper(node)) {
+        hasComponentHelper = true;
+      } else {
+        let specifier = resolver.identify(specifierForHelper(node), template.specifier);
+
+        if (specifier) {
+          helpers.add(pathFromSpecifier(specifier));
+        }
+      }
+    },
+
     ElementNode(node) {
       let { tag } = node;
       let specifier = resolver.identify(`template:${tag}`, template.specifier);
@@ -62,11 +74,11 @@ export function discoverTemplateDependencies(templateName: string, project: Proj
   };
 }
 
-function specifierForHelper({ path }: AST.MustacheStatement) {
+function specifierForHelper({ path }: AST.MustacheStatement | AST.SubExpression) {
   return `helper:${path.original}`;
 }
 
-function isComponentHelper({ path }: AST.MustacheStatement) {
+function isComponentHelper({ path }: AST.MustacheStatement | AST.SubExpression) {
   return path.type === 'PathExpression'
     && path.parts.length === 1
     && path.parts[0] === 'component';

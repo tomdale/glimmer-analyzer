@@ -20,6 +20,7 @@ describe('Template dependency analysis', function() {
       ],
       helpers: [
         '/basic-app/components/if',
+        '/basic-app/components/eq',
         '/basic-app/components/moment',
       ]
     });

@@ -76,3 +76,5 @@ function transformSetsToArrays(dependencies: InternalTemplateDependencies): Temp
 }
 
 export default Analyzer;
+
+export { Project };

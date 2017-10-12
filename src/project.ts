@@ -22,6 +22,7 @@ export class Template {
 
 export default class Project {
   projectDir: string;
+  rootName: string;
   map: ResolutionMap;
   resolver: Resolver;
   registry: BasicModuleRegistry;
@@ -30,6 +31,8 @@ export default class Project {
     this.projectDir = projectDir;
     let pkg = this.loadPackageJSON(projectDir);
     let { name } = pkg;
+
+    this.rootName = name;
 
     let config = {
       ...DEFAULT_MODULE_CONFIG,

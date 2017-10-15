@@ -1,11 +1,9 @@
-import Resolver from '@glimmer/resolver';
 import Project, { ResolutionMap } from './project';
 import {
   discoverTemplateDependencies,
   discoverRecursiveTemplateDependencies,
   TemplateDependencies as InternalTemplateDependencies
 } from './handlebars-analyzer';
-import { pathFromSpecifier } from './utils';
 
 class Analyzer {
   project: Project;

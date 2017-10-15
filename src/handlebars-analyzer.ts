@@ -1,7 +1,6 @@
-import Resolver from '@glimmer/resolver';
 import { AST, preprocess, traverse } from '@glimmer/syntax';
-import Project, { Template} from "./project";
-import { pathFromSpecifier } from "./utils";
+import Project from "./project";
+import { pathFromSpecifier } from "./specifiers";
 
 export interface TemplateDependencies {
   path: string;
@@ -93,7 +92,6 @@ function isImportComment({ value }: AST.MustacheCommentStatement) {
 }
 
 export function discoverRecursiveTemplateDependencies(templateName: string, project: Project): TemplateDependencies {
-  let resolver = project.resolver;
   let entryPoint = project.templateFor(templateName);
   let entryPointPath = pathFromSpecifier(entryPoint.specifier);
 

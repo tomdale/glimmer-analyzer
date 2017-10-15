@@ -1,10 +1,16 @@
 import fs = require('fs');
 import path = require('path');
+import Debug = require('debug');
 
 import { buildResolutionMap } from '@glimmer/resolution-map-builder';
-import Resolver, { BasicModuleRegistry } from '@glimmer/resolver';
+import Resolver, { BasicModuleRegistry, ResolverConfiguration } from '@glimmer/resolver';
+import { Dict, assert } from '@glimmer/util';
 
-import DEFAULT_MODULE_CONFIG from './module-config';
+import loadPackageJSON, { PackageJSON } from './utils/load-package-json';
+import loadConfigFactory, { Config } from './utils/load-config-factory';
+import buildResolverConfig from './utils/build-resolver-config';
+
+const debug = Debug('glimmer-analyzer:project');
 
 export interface ResolutionMap {
   [specifier: string]: string;
@@ -20,36 +26,87 @@ export class Template {
   }
 }
 
+export interface ProjectPaths {
+  config: string;
+  src: string;
+}
+
+export interface ProjectOptions {
+  environment?: string;
+  paths?: Partial<ProjectPaths>;
+}
+
+const DEFAULT_PATHS = {
+  src: 'src',
+  config: 'config'
+};
+
 export default class Project {
-  projectDir: string;
-  rootName: string;
-  map: ResolutionMap;
-  resolver: Resolver;
-  registry: BasicModuleRegistry;
+  environment: string;
+  pkg: PackageJSON;
+  paths: ProjectPaths;
+  config: Config;
+  resolverConfig: ResolverConfiguration;
 
-  constructor(projectDir: string) {
-    this.projectDir = projectDir;
-    let pkg = this.loadPackageJSON(projectDir);
-    let { name } = pkg;
+  protected _map: ResolutionMap;
+  protected _resolver: Resolver;
+  protected _registry: BasicModuleRegistry;
+  protected _pathMap: Dict<string>;
 
-    this.rootName = name;
+  constructor(public projectDir: string, options: ProjectOptions = {}) {
+    this.paths = Object.assign({}, DEFAULT_PATHS, options.paths);
+    this.environment = options.environment || 'development';
 
-    let config = {
-      ...DEFAULT_MODULE_CONFIG,
-      app: {
-        name,
-        rootName: name
-      }
-    };
+    debug(`creating project; dir=%s; env=%s; paths=%o`, projectDir, this.environment, this.paths);
 
-    let map = this.map = buildResolutionMap({
+    this.loadPackageJSON(projectDir);
+    this.loadEnvironmentConfig(projectDir, this.environment);
+
+    this.buildResolverConfig();
+  }
+
+  get map(): ResolutionMap {
+    if (this._map) { return this._map; }
+
+    let { resolverConfig: moduleConfig, projectDir } = this;
+    let modulePrefix = (moduleConfig.app && moduleConfig.app.rootName) || 'app';
+
+    let map = buildResolutionMap({
       projectDir,
-      moduleConfig: config,
-      modulePrefix: name
+      moduleConfig,
+      modulePrefix
     });
 
-    this.registry = new BasicModuleRegistry(map);
-    this.resolver = new Resolver(config, this.registry);
+    // We can stop doing this if/when https://github.com/glimmerjs/resolution-map-builder/pull/27 is merged.
+    for (let key in map) {
+      map[key] = `src/${map[key]}`;
+    }
+
+    return this._map = map;
+  }
+
+  get pathMap() {
+    if (this._pathMap) { return this._pathMap; }
+
+    let map = this.map;
+    let pathMap: Dict<string> = {};
+    for (let key in map) {
+      pathMap[map[key]] = key;
+    }
+
+    return this._pathMap = pathMap;
+  }
+
+  get resolver(): Resolver {
+    if (this._resolver) { return this._resolver; }
+
+    return this._resolver = new Resolver(this.resolverConfig, this.registry);
+  }
+
+  get registry(): BasicModuleRegistry {
+    if (this._registry) { return this._registry; }
+
+    return this._registry = new BasicModuleRegistry(this.map);
   }
 
   templateFor(templateName: string) {
@@ -59,19 +116,43 @@ export default class Project {
     }
 
     let templatePath = this.resolver.resolve(specifier);
-    let templateString = fs.readFileSync(path.join(this.projectDir, 'src', templatePath), 'utf8');
+    let templateString = fs.readFileSync(path.join(this.projectDir, templatePath), 'utf8');
 
     return new Template(templateString, specifier);
   }
 
-  private loadPackageJSON(appPath: string) {
-    let pkgPath = path.join(appPath, 'package.json');
-    try {
-      return JSON.parse(fs.readFileSync(pkgPath).toString());
-    } catch (e) {
-      let err = Error(`Couldn't load package.json file at ${pkgPath}: ${e.message}`);
-      err.stack = e.stack;
-      throw err;
+  specifierForPath(objectPath: string): string | null {
+    return this.pathMap[objectPath] || null;
+  }
+
+  pathForSpecifier(specifier: string): string | null {
+    return this.map[specifier] || null;
+  }
+
+  protected loadPackageJSON(projectDir: string) {
+    let pkgPath = path.join(projectDir, 'package.json');
+    let pkg: PackageJSON = loadPackageJSON(pkgPath);
+
+    this.pkg = pkg;
+
+    assert(pkg.name as string, `The package.json at ${pkgPath} did not contain a valid 'name' field.`);
+    debug('loaded package.json; path=%s', pkgPath);
+  }
+
+  protected loadEnvironmentConfig(projectDir: string, environment: string) {
+    let configPath = path.join(projectDir, this.paths.config, 'environment');
+    let configFactory = loadConfigFactory(configPath);
+
+    if (configFactory) {
+      this.config = configFactory(environment);
+      debug('evaluated project config; path=%s; config=%o', configPath, this.config);
+    } else {
+      debug('no project config found; falling back to defaults');
+      this.config = {};
     }
+  }
+
+  protected buildResolverConfig() {
+    this.resolverConfig = buildResolverConfig(this.config, this.pkg.name);
   }
 }

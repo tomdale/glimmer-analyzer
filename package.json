@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "test": "mocha",
-    "prepublish": "npm run build",
+    "prepare": "npm run build",
     "build": "tsc -p tsconfig.build.json"
   },
   "repository": {

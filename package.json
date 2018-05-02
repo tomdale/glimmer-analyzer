@@ -29,21 +29,21 @@
   },
   "homepage": "https://github.com/tomdale/glimmer-analyzer#readme",
   "devDependencies": {
-    "@glimmer/compiler": "^0.29.1",
+    "@glimmer/compiler": "^0.34.2",
     "@types/chai": "^3.5.2",
     "@types/debug": "^0.0.30",
     "@types/mocha": "^2.2.41",
     "@types/node": "^7.0.18",
     "chai": "^3.5.0",
     "mocha": "^3.4.1",
-    "ts-node": "^3.0.4",
-    "typescript": "^2.3.2"
+    "ts-node": "^5.0.1",
+    "typescript": "~2.4.0"
   },
   "dependencies": {
     "@glimmer/resolution-map-builder": "^0.4.0",
     "@glimmer/resolver": "^0.3.0",
-    "@glimmer/syntax": "^0.29.1",
+    "@glimmer/syntax": "^0.34.2",
     "debug": "^3.1.0",
-    "simple-html-tokenizer": "^0.4.1"
+    "simple-html-tokenizer": "^0.5.1"
   }
 }
